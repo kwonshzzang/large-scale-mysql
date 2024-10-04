@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: large-scale-mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/fast_sns?rewriteBatchedStatements=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: root
+    password:
+
+server:
+  port: 9090
+
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core: TRACE
