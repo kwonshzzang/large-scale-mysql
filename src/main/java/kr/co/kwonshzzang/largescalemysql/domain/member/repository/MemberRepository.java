@@ -20,7 +20,14 @@ import java.util.Optional;
 public class MemberRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final static String TABLE =  "Member";
-
+    private final RowMapper<Member> rowMapper = (ResultSet rs, int rowNum) ->
+            Member.builder()
+                    .id(rs.getLong("id"))
+                    .email(rs.getString("email"))
+                    .nickname(rs.getString("nickname"))
+                    .birthday(rs.getObject("birthday", LocalDate.class))
+                    .createdAt(rs.getObject("createdAt", LocalDateTime.class))
+                    .build();
 
 
     public Member save(Member member) {
@@ -53,7 +60,9 @@ public class MemberRepository {
 
 
     private Member update(Member member) {
-        //TODO: implemented
+        var sql = String.format( "UPDATE %s SET email = :email, nickname = :nickname, birthday = :birthday WHERE id = :id", TABLE );
+        SqlParameterSource params = new BeanPropertySqlParameterSource(member);
+        namedParameterJdbcTemplate.update(sql, params);
         return member;
     }
 
@@ -63,15 +72,6 @@ public class MemberRepository {
          */
         var sql = String.format("SELECT * FROM %s WHERE id = :id", TABLE);
         var params = new MapSqlParameterSource().addValue("id", id);
-        RowMapper<Member> rowMapper = (ResultSet rs, int rowNum) ->
-                Member.builder()
-                        .id(rs.getLong("id"))
-                        .email(rs.getString("email"))
-                        .nickname(rs.getString("nickname"))
-                        .birthday(rs.getObject("birthday", LocalDate.class))
-                        .createdAt(rs.getObject("createdAt", LocalDateTime.class))
-                        .build();
-
         var member = namedParameterJdbcTemplate.queryForObject(sql, params, rowMapper);
         return Optional.ofNullable(member);
     }

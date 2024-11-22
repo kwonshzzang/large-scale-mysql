@@ -2,6 +2,8 @@ package kr.co.kwonshzzang.largescalemysql.domain.member.service;
 
 import kr.co.kwonshzzang.largescalemysql.domain.member.dto.RegisterMemberCommand;
 import kr.co.kwonshzzang.largescalemysql.domain.member.entity.Member;
+import kr.co.kwonshzzang.largescalemysql.domain.member.entity.MemberNicknameHistory;
+import kr.co.kwonshzzang.largescalemysql.domain.member.repository.MemberNicknameHistoryRepository;
 import kr.co.kwonshzzang.largescalemysql.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberWriteService {
     private final MemberRepository memberRepository;
+    private final MemberNicknameHistoryRepository memberNicknameHistoryRepository;
 
     public Member register(RegisterMemberCommand command) {
         /**
@@ -25,6 +28,26 @@ public class MemberWriteService {
                 .email(command.email())
                 .birthday(command.birthday())
                 .build();
-        return memberRepository.save(member);
+        var savedMember = memberRepository.save(member);
+
+        saveMemberNicknameHistory(savedMember);
+        return savedMember;
+    }
+
+    public void changeNickname(Long memberId, String nickname) {
+        var member = memberRepository.findById(memberId).orElseThrow();
+        member.changeNickname(nickname);
+        var savedMember = memberRepository.save(member);
+
+       saveMemberNicknameHistory(savedMember);
+    }
+
+    private void saveMemberNicknameHistory(Member member) {
+        var memberHistory = MemberNicknameHistory.builder()
+                .memberId(member.getId())
+                .nickname(member.getNickname())
+                .build();
+        memberNicknameHistoryRepository.save(memberHistory);
+
     }
 }
