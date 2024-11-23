@@ -27,6 +27,10 @@ public class MemberReadService {
         return memberNicknameHistories.stream().map(this::toMemberNickNameHistoryDto).toList();
     }
 
+    public List<MemberDto> getMembers(List<Long> ids) {
+        return memberRepository.findAllByIdIn(ids).stream().map(this::toMemberDto).toList();
+    }
+
     public MemberDto toMemberDto(Member member) {
         return new MemberDto(
                 member.getId(), member.getEmail(), member.getNickname(), member.getBirthday()

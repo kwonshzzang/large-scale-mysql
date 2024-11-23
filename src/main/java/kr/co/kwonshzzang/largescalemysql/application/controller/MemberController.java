@@ -1,4 +1,4 @@
-package kr.co.kwonshzzang.largescalemysql.controller;
+package kr.co.kwonshzzang.largescalemysql.application.controller;
 
 import kr.co.kwonshzzang.largescalemysql.domain.member.dto.MemberDto;
 import kr.co.kwonshzzang.largescalemysql.domain.member.dto.MemberNickNameHistoryDto;
@@ -13,27 +13,28 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/members")
 public class MemberController {
     private final MemberWriteService memberWriteService;
     private final MemberReadService memberReadService;
 
-    @PostMapping("/members")
+    @PostMapping("")
     public MemberDto registerMember(@RequestBody RegisterMemberCommand command) {
         var member =  memberWriteService.register(command);
         return memberReadService.toMemberDto(member);
     }
 
-    @GetMapping("/members/{id}")
+    @GetMapping("/{id}")
     public MemberDto getMember(@PathVariable Long id) {
         return memberReadService.getMember(id);
     }
 
-    @GetMapping("/members/{memberId}/nicknamehistories")
+    @GetMapping("/{memberId}/nicknamehistories")
     public List<MemberNickNameHistoryDto> getMemberNickNameHistoris(@PathVariable Long memberId) {
         return  memberReadService.getNicknameHistories(memberId);
     }
 
-    @PutMapping("/memberes/{id}/name")
+    @PutMapping("/{id}/name")
     public MemberDto changeNickname(@PathVariable Long id, @RequestBody String nickname) {
         memberWriteService.changeNickname(id, nickname);
         return memberReadService.getMember(id);

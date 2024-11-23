@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -42,6 +43,25 @@ public class MemberRepository {
         return  update(member);
     }
 
+    public Optional<Member> findById(long id) {
+        /**
+         *  select * from member where id = :id
+         */
+        var sql = String.format("SELECT * FROM %s WHERE id = :id", TABLE);
+        var params = new MapSqlParameterSource().addValue("id", id);
+        var member = namedParameterJdbcTemplate.queryForObject(sql, params, rowMapper);
+        return Optional.ofNullable(member);
+    }
+
+    public List<Member> findAllByIdIn(List<Long> ids) {
+        if(ids.isEmpty())
+            return List.of();
+
+        var sql = String.format("SELECT * FROM %s WHERE id IN (:ids)", TABLE);
+        var params = new MapSqlParameterSource("ids", ids);
+        return namedParameterJdbcTemplate.query(sql, params, rowMapper);
+    }
+
     private Member insert(Member member) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate())
                 .withTableName(TABLE)
@@ -66,13 +86,5 @@ public class MemberRepository {
         return member;
     }
 
-    public Optional<Member> findById(long id) {
-        /**
-         *  select * from member where id = :id
-         */
-        var sql = String.format("SELECT * FROM %s WHERE id = :id", TABLE);
-        var params = new MapSqlParameterSource().addValue("id", id);
-        var member = namedParameterJdbcTemplate.queryForObject(sql, params, rowMapper);
-        return Optional.ofNullable(member);
-    }
+
 }
