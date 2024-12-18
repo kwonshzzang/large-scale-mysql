@@ -3,7 +3,8 @@ spring:
     name: large-scale-mysql
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/fast_sns?rewriteBatchedStatements=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+#    url: jdbc:mysql://localhost:3306/fast_sns?rewriteBatchedStatements=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/fast_sns?rewriteBatchedStatements=true&profileSQL=true&logger=Slf4JLogger&maxQuerySizeToLog=999999999&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     username: root
     password:
 
@@ -15,4 +16,4 @@ logging:
     org:
       springframework:
         jdbc:
-          core: TRACE
+          core: INFO
